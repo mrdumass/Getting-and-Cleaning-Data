@@ -14,7 +14,7 @@ colnames<-read.table("~/downloads/UCI HAR Dataset-2/features.txt")
 names(dataset)<-colnames[,2]
 ## find only the columns that are mean and std pairs ##
 colnames<-sub("meanFreq","ignore",colnames[,2])
-want<-grep["mean|std",colnames]
+want<-grep("mean|std",colnames)
 ## downsize the data set to only those mean and std colums
 dataset<-dataset[want]
 ## read in the .train files
@@ -24,8 +24,15 @@ test2<-read.table("~/downloads/UCI HAR Dataset-2/test/y_test.txt")
 test3<-read.table("~/downloads/UCI HAR Dataset-2/test/subject_test.txt",sep="\t")
 ## rbind these together as well  ##
 temp1<-rbind(test3,train3)
-temp2<-rbind(test2,train3)
+temp2<-rbind(test2,train2)
 ## cbind these all together into a complete raw data set ##
 dataset<-cbind(temp1,temp2,dataset)
 ## name the first two columns "subject" and "activity"   ##
-names(dataset[1:2])<-c("subject","activity")
+colnames<-names(dataset)
+colnames[1:2]<-c("subject","activity")
+names(dataset)<-colnames
+## make the tidy data set with the calculate means##
+dataset2<-aggregate(dataset[3:68],by=list(dataset$subject,dataset$activity),FUN=mean,na.rm=TRUE)
+names(dataset2)<-colnames
+## write out tidy data set as a txt ##
+write.table(dataset2,"~/downloads/tidydata.txt",col.names=TRUE)
