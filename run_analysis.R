@@ -3,35 +3,29 @@
 ## then it will clean up that data frame to include only ##
 ## those thing we are interested in and change the names ##
 ## of the columns so they are easy to understand         ##
-## read in the .test files                               ##
-test1<-read.table("~/downloads/UCI HAR Dataset-2/test/subject_test.txt",sep="\t")
-test2<-read.table("~/downloads/UCI HAR Dataset-2/test/X_test.txt",sep="\t")
-test3<-read.table("~/downloads/UCI HAR Dataset-2/test/y_test.txt",sep="\t")
-test4<-read.table("~/downloads/UCI HAR Dataset-2/test/inertial Signals/body_acc_x_test.txt",sep="\t")
-test5<-read.table("~/downloads/UCI HAR Dataset-2/test/inertial Signals/body_acc_y_test.txt",sep="\t")
-test6<-read.table("~/downloads/UCI HAR Dataset-2/test/inertial Signals/body_acc_z_test.txt",sep="\t")
-test7<-read.table("~/downloads/UCI HAR Dataset-2/test/inertial Signals/body_gyro_x_test.txt",sep="\t")
-test8<-read.table("~/downloads/UCI HAR Dataset-2/test/inertial Signals/body_gyro_y_test.txt",sep="\t")
-test9<-read.table("~/downloads/UCI HAR Dataset-2/test/inertial Signals/body_gyro_z_test.txt",sep="\t")
-test10<-read.table("~/downloads/UCI HAR Dataset-2/test/inertial Signals/total_acc_x_test.txt",sep="\t")
-test11<-read.table("~/downloads/UCI HAR Dataset-2/test/inertial Signals/total_acc_y_test.txt",sep="\t")
-test12<-read.table("~/downloads/UCI HAR Dataset-2/test/inertial Signals/total_acc_z_test.txt",sep="\t")
-## cbind all thise test set together into one set ##
-test_complete<-cbind(test1,test2,test3,test4,test5,test6,test7,test8,test9,test10,test11,test12)
+## read in the .test and trian data file                               ##
+test1<-read.table("~/downloads/UCI HAR Dataset-2/test/X_test.txt")
+train1<-read.table("~/downloads/UCI HAR Dataset-2/train/X_train.txt")
+## rbind all thise test set together into one set ##
+dataset<-rbind(test1,train1)
+## read in the names of the columns ##
+colnames<-read.table("~/downloads/UCI HAR Dataset-2/features.txt")
+## add names to the columns of dataset ##
+names(dataset)<-colnames[,2]
+## find only the columns that are mean and std pairs ##
+colnames<-sub("meanFreq","ignore",colnames[,2])
+want<-grep["mean|std",colnames]
+## downsize the data set to only those mean and std colums
+dataset<-dataset[want]
 ## read in the .train files
-train1<-read.table("~/downloads/UCI HAR Dataset-2/train/subject_train.txt",sep="\t")
-train2<-read.table("~/downloads/UCI HAR Dataset-2/train/X_train.txt",sep="\t")
-train3<-read.table("~/downloads/UCI HAR Dataset-2/train/y_train.txt",sep="\t")
-train4<-read.table("~/downloads/UCI HAR Dataset-2/train/inertial Signals/body_acc_x_train.txt",sep="\t")
-train5<-read.table("~/downloads/UCI HAR Dataset-2/train/inertial Signals/body_acc_y_train.txt",sep="\t")
-train6<-read.table("~/downloads/UCI HAR Dataset-2/train/inertial Signals/body_acc_z_train.txt",sep="\t")
-train7<-read.table("~/downloads/UCI HAR Dataset-2/train/inertial Signals/body_gyro_x_train.txt",sep="\t")
-train8<-read.table("~/downloads/UCI HAR Dataset-2/train/inertial Signals/body_gyro_y_train.txt",sep="\t")
-train9<-read.table("~/downloads/UCI HAR Dataset-2/train/inertial Signals/body_gyro_z_train.txt",sep="\t")
-train10<-read.table("~/downloads/UCI HAR Dataset-2/train/inertial Signals/total_acc_x_train.txt",sep="\t")
-train11<-read.table("~/downloads/UCI HAR Dataset-2/train/inertial Signals/total_acc_y_train.txt",sep="\t")
-train12<-read.table("~/downloads/UCI HAR Dataset-2/train/inertial Signals/total_acc_z_train.txt",sep="\t")
-## cbind all thise test set together into one set ##
-train_complete<-cbind(train1,train2,train3,train4,train5,train6,train7,train8,train9,train10,train11,train12)
-## join the test and train set together ##
-total_complete<-rbind(test_complete,train_complete)
+train2<-read.table("~/downloads/UCI HAR Dataset-2/train/y_train.txt")
+train3<-read.table("~/downloads/UCI HAR Dataset-2/train/subject_train.txt",sep="\t")
+test2<-read.table("~/downloads/UCI HAR Dataset-2/test/y_test.txt")
+test3<-read.table("~/downloads/UCI HAR Dataset-2/test/subject_test.txt",sep="\t")
+## rbind these together as well  ##
+temp1<-rbind(test3,train3)
+temp2<-rbind(test2,train3)
+## cbind these all together into a complete raw data set ##
+dataset<-cbind(temp1,temp2,dataset)
+## name the first two columns "subject" and "activity"   ##
+names(dataset[1:2])<-c("subject","activity")
